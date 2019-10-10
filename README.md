@@ -2,7 +2,7 @@
 #### UE5.2 : Informatique
 
 [Nour Boulahcen][ngh], [Quentin Lieumont][qgh], [Adam Mejjaoui][agh].
- - Sujet : ` `
+ - Sujet : `Classification et représentation des séries temporelles`
 
 
 [ngh]: https://github.com/mor3s
