@@ -4,6 +4,7 @@
 [Nour Boulahcen][ngh], [Quentin Lieumont][qgh], [Adam Mejjaoui][agh].
  - Sujet : `Classification et représentation des séries temporelles`
  - [Lien du trello][trello]
+ - [Enoncé](Enonce.md)
 
 
 [ngh]: https://github.com/mor3s
