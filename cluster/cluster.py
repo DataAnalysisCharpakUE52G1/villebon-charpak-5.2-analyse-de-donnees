@@ -26,7 +26,7 @@ class Cluster:
         for i, clust in enumerate(self.get(n)):
             print(f"Cluster {i}: {clust}")
 
-    def get(self, n: int) -> np.array:
+    def get(self, n: int) -> np.ndarray:
         """
         Calculate the n clusters
         :param n: number of clusters
@@ -37,4 +37,4 @@ class Cluster:
         s = pd.Series(results)
         clusters = s.unique()
         clusts = [s[s == clust].index for clust in clusters]
-        return clusts
+        return np.array(clusts)
