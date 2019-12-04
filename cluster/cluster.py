@@ -24,7 +24,7 @@ class Cluster:
         :param n: number of clusters
         """
         for i, clust in enumerate(self.get(n)):
-            print(f"Cluster {i}: {clust}")
+            print(f"Cluster {i}: {list(clust)}")
 
     def get(self, n: int) -> np.ndarray:
         """
