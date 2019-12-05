@@ -35,12 +35,16 @@ def get_data(link: str):
         ),
         format=_format,
     )
-    dataframe = dataframe.set_index(pd.DatetimeIndex(dataframe['time']))
+    dataframe = dataframe.set_index(pd.DatetimeIndex(dataframe["time"]))
     return dataframe, y
 
 
+def basic_features_extract(data):
+    return extract_features(data, column_id="id", column_sort="time")
+
+
 def extract_features_from_TS(Data, y):
-    extracted_features = extract_features(Data, column_id="id", column_sort="time")
+    extracted_features = basic_features_extract(Data)
     impute(extracted_features)
     # features_filtered = select_features(extracted_features, y)
     features_filtered_direct = extract_relevant_features(
@@ -50,12 +54,10 @@ def extract_features_from_TS(Data, y):
 
 
 if __name__ == "__main__":
-    X, y = get_data("data/data1.csv")
-    X = X[['id','time',*range(2,20)]]
-    y = y[0:18]
+    X, Y = get_data("data/data1.csv")
+    X = X[["id", "time", *range(2, 20)]]
     print(X.head())
-    print(y)
-    extracted_features, features_filtered_direct = extract_features_from_TS(X, y)
-    print(extracted_features)
-    clust = Cluster(extracted_features)
+    features = basic_features_extract(X)
+    print(features)
+    clust = Cluster(features)
     clust.print(2)
