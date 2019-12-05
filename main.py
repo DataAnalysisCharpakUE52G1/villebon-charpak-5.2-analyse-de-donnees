@@ -16,27 +16,28 @@ def get_data(link: str):
     data = pd.read_csv(link)
     inner = np.array(data)[:, 1:].transpose()
     y = (np.array(data)[:, 0] - 1).astype(bool)
+    ids = np.concatenate([[i] * data.shape[0] for i in range(data.shape[1] - 1)])
     dataframe = pd.DataFrame(
         np.insert(
-            np.insert(inner, 0, np.arange(len(inner[:, 0]), dtype=float), axis=1),
+            np.insert(np.array(data)[:, 1:].reshape(-1, 1), 0, 0, axis=1),
             0,
-            np.ones(len(inner[:, 0])),
+            ids,
             axis=1,
         )
     )
-    dataframe.rename(columns={0: "id", 1: "time"}, inplace=True)
+    dataframe.rename(columns={0: "id", 1: "time", 2: "val"}, inplace=True)
     _format = "%M:%S"
     dataframe["time"] = pd.to_datetime(
         np.array(
             [
                 pd.to_datetime(dt.datetime(2000, 1, 1, *from_seconds(i)))
-                for i in range(len(inner[:, 0]))
-            ]
+                for i in range(data.shape[1]-1)
+            ]*data.shape[0]
         ),
         format=_format,
     )
     dataframe = dataframe.set_index(pd.DatetimeIndex(dataframe["time"]))
-    return dataframe, y
+    return dataframe, y, data.shape[1]-1
 
 
 def basic_features_extract(data):
@@ -54,10 +55,9 @@ def extract_features_from_TS(Data, y):
 
 
 if __name__ == "__main__":
-    X, Y = get_data("data/data1.csv")
-    X = X[["id", "time", *range(2, 20)]]
-    print(X.head())
-    features = basic_features_extract(X)
-    print(features)
-    clust = Cluster(features)
-    clust.print(2)
+    X, Y, n = get_data("data/data1.csv")
+    print(X.head(n*3))
+    # features = np.array(basic_features_extract(X))
+    # print(features)
+    # clust = Cluster(features)
+    # clust.print(2)
