@@ -12,8 +12,8 @@ def from_seconds(sec):
     return (sec // 60) // 60, (sec // 60) % 60, sec % 60
 
 
-def get_data(link: str):
-    data = pd.read_csv(link)
+def get_data():
+    data = pd.concat([pd.read_csv(link) for link in [f"data/data{i}.csv" for i in range(1, 7)]])
     y = (np.array(data)[:, 0] - 1).astype(bool)
     ids = np.concatenate([[i] * (data.shape[1] - 1) for i in range(data.shape[0])])
     dataframe = pd.DataFrame(
@@ -54,9 +54,7 @@ def extract_features_from_TS(Data, y):
 
 
 if __name__ == "__main__":
-    X, Y, n = get_data("data/data1.csv")
-    print(X.head(n*3))
-    # features = np.array(basic_features_extract(X))
-    # print(features)
-    # clust = Cluster(features)
-    # clust.print(2)
+    X, Y, n = get_data()
+    print(X)
+    features = np.array(basic_features_extract(X))
+    np.savetxt("features.csv", features)
