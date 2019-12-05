@@ -14,9 +14,8 @@ def from_seconds(sec):
 
 def get_data(link: str):
     data = pd.read_csv(link)
-    inner = np.array(data)[:, 1:].transpose()
     y = (np.array(data)[:, 0] - 1).astype(bool)
-    ids = np.concatenate([[i] * data.shape[0] for i in range(data.shape[1] - 1)])
+    ids = np.concatenate([[i] * (data.shape[1] - 1) for i in range(data.shape[0])])
     dataframe = pd.DataFrame(
         np.insert(
             np.insert(np.array(data)[:, 1:].reshape(-1, 1), 0, 0, axis=1),
