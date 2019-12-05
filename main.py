@@ -5,6 +5,11 @@ from tsfresh import select_features
 from tsfresh.utilities.dataframe_functions import impute
 from tsfresh import extract_relevant_features
 import pandas as pd
+import datetime as dt
+
+
+def from_seconds(sec):
+    return (sec // 60) // 60, (sec // 60) % 60, sec % 60
 
 
 def get_data(link: str):
@@ -20,6 +25,17 @@ def get_data(link: str):
         )
     )
     dataframe.rename(columns={0: "id", 1: "time"}, inplace=True)
+    _format = "%M:%S"
+    dataframe["time"] = pd.to_datetime(
+        np.array(
+            [
+                pd.to_datetime(dt.datetime(2000, 1, 1, *from_seconds(i)))
+                for i in range(len(inner[:, 0]))
+            ]
+        ),
+        format=_format,
+    )
+    dataframe = dataframe.set_index(pd.DatetimeIndex(dataframe['time']))
     return dataframe, y
 
 
@@ -34,15 +50,12 @@ def extract_features_from_TS(Data, y):
 
 
 if __name__ == "__main__":
-    features = np.array(
-        [
-            1 * np.linspace(0, 100, 100),
-            2 * np.linspace(0, 100, 100),
-            np.ones(100),
-            1.01 * np.ones(100),
-        ]
-    )
     X, y = get_data("data/data1.csv")
+    X = X[['id','time',*range(2,20)]]
+    y = y[0:18]
+    print(X.head())
+    print(y)
     extracted_features, features_filtered_direct = extract_features_from_TS(X, y)
+    print(extracted_features)
     clust = Cluster(extracted_features)
     clust.print(2)
