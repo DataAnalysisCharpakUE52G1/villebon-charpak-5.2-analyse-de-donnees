@@ -4,6 +4,7 @@ from tsfresh import extract_features
 from tsfresh import select_features
 from tsfresh.utilities.dataframe_functions import impute
 from tsfresh import extract_relevant_features
+import pandas as pd
 
 
 def get_data(link: str):
@@ -27,7 +28,7 @@ def extract_features_from_TS(Data, y):
     impute(extracted_features)
     # features_filtered = select_features(extracted_features, y)
     features_filtered_direct = extract_relevant_features(
-        timeseries, y, column_id="id", column_sort="time"
+        Data, y, column_id="id", column_sort="time"
     )
     return extracted_features, features_filtered_direct
 
@@ -41,5 +42,7 @@ if __name__ == "__main__":
             1.01 * np.ones(100),
         ]
     )
-    clust = Cluster(features)
+    X, y = get_data("data/data1.csv")
+    extracted_features, features_filtered_direct = extract_features_from_TS(X, y)
+    clust = Cluster(extracted_features)
     clust.print(2)
