@@ -6,6 +6,10 @@ from tsfresh.utilities.dataframe_functions import impute
 from tsfresh import extract_relevant_features
 import pandas as pd
 import datetime as dt
+import sys
+
+
+sys.stdout = open("out", "w")
 
 
 def from_seconds(sec):
@@ -56,5 +60,5 @@ def extract_features_from_TS(Data, y):
 if __name__ == "__main__":
     X, Y, n = get_data()
     print(X)
-    features = np.array(basic_features_extract(X))
+    features = np.array(basic_features_extract(X.head(n)))
     np.savetxt("features.csv", features)
