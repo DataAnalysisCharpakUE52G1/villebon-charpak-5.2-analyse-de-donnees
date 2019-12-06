@@ -7,9 +7,10 @@ from tsfresh import extract_relevant_features
 import pandas as pd
 import datetime as dt
 import sys
+import matplotlib.pyplot as plt
 
 
-sys.stdout = open("out", "w")
+# sys.stdout = open("out", "w")
 
 
 def from_seconds(sec):
@@ -17,7 +18,9 @@ def from_seconds(sec):
 
 
 def get_data():
-    data = pd.concat([pd.read_csv(link) for link in [f"data/data{i}.csv" for i in range(1, 7)]])
+    data = pd.concat(
+        [pd.read_csv(link) for link in [f"data/data{i}.csv" for i in range(1, 7)]]
+    )
     y = (np.array(data)[:, 0] - 1).astype(bool)
     ids = np.concatenate([[i] * (data.shape[1] - 1) for i in range(data.shape[0])])
     dataframe = pd.DataFrame(
@@ -34,13 +37,14 @@ def get_data():
         np.array(
             [
                 pd.to_datetime(dt.datetime(2000, 1, 1, *from_seconds(i)))
-                for i in range(data.shape[1]-1)
-            ]*data.shape[0]
+                for i in range(data.shape[1] - 1)
+            ]
+            * data.shape[0]
         ),
         format=_format,
     )
     dataframe = dataframe.set_index(pd.DatetimeIndex(dataframe["time"]))
-    return dataframe, y, data.shape[1]-1
+    return dataframe, y, data.shape[1] - 1
 
 
 def basic_features_extract(data):
@@ -58,7 +62,17 @@ def extract_features_from_TS(Data, y):
 
 
 if __name__ == "__main__":
-    X, Y, n = get_data()
-    print(X)
-    features = np.array(basic_features_extract(X.head(n)))
-    np.savetxt("features.csv", features)
+    n_series = 10
+    n_clust = 4
+    features = np.concatenate(
+        [np.loadtxt(f"data/f{i}.csv") for i in range(1, 4)], axis=0
+    )[:n_series]
+    features = features[(0, 1, 3, 5, 6, 8), :]
+    print(f"Data recive : {features.shape}")
+    clust = Cluster(features)
+    print("Cluster initialized :)")
+    lengths = list(map(len, clust.get(n_series)))
+    plt.plot(list(range(len(lengths))), lengths)
+    plt.show()
+    clust.print(n_clust)
+    clust.dendogram()
