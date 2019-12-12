@@ -8,6 +8,11 @@ from math import sqrt
 from fastdtw import fastdtw
 
 
+def print(msg):
+    with open("out.log", "a+") as f:
+        f.write(msg)
+
+
 def dtw(s1, s2):
     return fastdtw(s1, s2)[0]
 
@@ -41,34 +46,30 @@ ts = norm(
 print(ts.shape)
 to_hist = []
 m = len(ts)
-h = ts.shape[0]
-prec = 0
+
 for i in range(0, m - 1):
-    if i/h > prec:
-        print(f" {i:02d}%")
     for j in range(i + 1, m):
         to_hist.append(dtw(ts[i], ts[j]))
 
 to_hist = np.array(to_hist)
 
-plt.hist(to_hist, bins=50)
-plt.show()
 print(np.median(to_hist))
 print(to_hist.std())
 
+for eps in np.arange(0, to_hist.std()*2, 0.1):
+    db = DBSCAN(eps=eps).fit(ts)
+    core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
+    core_samples_mask[db.core_sample_indices_] = True
+    labels = db.labels_
+
+
+    n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
+    n_noise_ = list(labels).count(-1)
+    print(f"Estimated number of clusters: {n_clusters_}")
+    print(f"Estimated number of noise points: {n_noise_}")
+
 
 """
-db = DBSCAN(eps=5.3).fit(ft)
-core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
-core_samples_mask[db.core_sample_indices_] = True
-labels = db.labels_
-
-
-n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
-n_noise_ = list(labels).count(-1)
-
-print(f"Estimated number of clusters: {n_clusters_}")
-print(f"Estimated number of noise points: {n_noise_}")
 clusters = [np.arange(ft.shape[0])[labels == i] for i in set(list(labels)) - {-1}]
 data = norm(
     np.concatenate(
